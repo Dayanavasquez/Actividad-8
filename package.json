@@ -1,0 +1,26 @@
+{
+  "name": "blog-api",
+  "version": "1.0.0",
+  "description": "API REST de un blog con Express y MySQL (actividad 8)",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env index.js",
+    "dev": "node --env-file-if-exists=.env --watch index.js"
+  },
+  "keywords": [
+    "express",
+    "mysql",
+    "api",
+    "rest",
+    "blog"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.13",
+    "express": "^5.0.0",
+    "mysql2": "^3.11.3"
+  }
+}

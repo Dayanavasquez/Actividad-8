@@ -1,0 +1,96 @@
+@baseUrl = http://localhost:3000
+
+### 1. Listar autores → 200, array de autores
+GET {{baseUrl}}/api/authors
+
+### 2. Autor por id → 200, objeto
+GET {{baseUrl}}/api/authors/1
+
+### 3. Recuperar posts de un autor por id → 200, array de posts
+GET {{baseUrl}}/api/authors/1/posts
+
+### 3. Recuperar posts de un autor por nombre → 200, array de posts
+GET {{baseUrl}}/api/authors/nombre/Ana Torres/posts
+
+### 4. Crear autor → 200, objeto creado (la respuesta alimenta la request 11)
+# @name crearAutor
+POST {{baseUrl}}/api/authors
+Content-Type: application/json
+
+{
+  "nombre": "Diego Farias",
+  "email": "diego.farias@example.com",
+  "imagen": "https://i.pravatar.cc/150?img=5"
+}
+
+### 5. Crear autor con email repetido → 400, mensaje
+POST {{baseUrl}}/api/authors
+Content-Type: application/json
+
+{
+  "nombre": "Diego Farias",
+  "email": "diego.farias@example.com",
+  "imagen": "https://i.pravatar.cc/150?img=5"
+}
+
+### 6. Crear autor con datos inválidos → 400, mensaje
+POST {{baseUrl}}/api/authors
+Content-Type: application/json
+
+{
+  "nombre": "Alejandro",
+  "email": "esto-no"
+}
+
+### 7. Autor que no existe → 404, mensaje
+GET {{baseUrl}}/api/authors/9999
+
+### 8. Id de autor no numérico → 400, mensaje
+GET {{baseUrl}}/api/authors/abc
+
+### 9. Listar posts → 200, array de posts
+GET {{baseUrl}}/api/posts
+
+### 10. Post por id → 200, objeto
+GET {{baseUrl}}/api/posts/1
+
+### 11. Posts de un autor sin publicaciones → 200, array vacío
+# Ojo: hay que enviar antes la request 4. El autor recién creado no tiene posts;
+# los tres autores del seed tienen dos cada uno.
+GET {{baseUrl}}/api/authors/{{crearAutor.response.body.$.id}}/posts
+
+### 12. Crear post → 200, objeto creado
+POST {{baseUrl}}/api/posts
+Content-Type: application/json
+
+{
+  "titulo": "Middlewares en Express",
+  "descripcion": "Cómo encadenar funciones que se ejecutan antes del controlador.",
+  "categoria": "Backend",
+  "autorId": 1
+}
+
+### 13. Crear post con datos inválidos → 400, mensaje
+POST {{baseUrl}}/api/posts
+Content-Type: application/json
+
+{
+  "titulo": "Ok",
+  "descripcion": "corta",
+  "categoria": "Backend",
+  "autorId": 1
+}
+
+### 14. Crear post con autor inexistente → 400, mensaje
+POST {{baseUrl}}/api/posts
+Content-Type: application/json
+
+{
+  "titulo": "Post de un autor que no existe",
+  "descripcion": "El autorId 9999 no está en la tabla autores.",
+  "categoria": "Backend",
+  "autorId": 9999
+}
+
+### 15. Post que no existe → 404, mensaje
+GET {{baseUrl}}/api/posts/9999
