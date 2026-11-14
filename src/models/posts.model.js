@@ -85,3 +85,31 @@ export const insert = async ({ titulo, descripcion, categoria, autorId }) => {
   const [result] = await DB.execute(sql, [titulo, descripcion, categoria, autorId]);
   return selectById(result.insertId);
 };
+
+/**
+ * Reemplaza los datos de un post y devuelve la fila actualizada, con su autor
+ * anidado (por eso vuelve a pasar por `selectById` y no por el `UPDATE`).
+ * @param {number} id id del post
+ * @param {{titulo: string, descripcion: string, categoria: string, autorId: number}} post datos del post
+ * @returns {Promise<Object|null>} el post actualizado o null si no existe
+ */
+export const update = async (id, { titulo, descripcion, categoria, autorId }) => {
+  const sql = `
+    UPDATE posts
+    SET titulo = ?, descripcion = ?, categoria = ?, autor_id = ?
+    WHERE id = ?
+  `;
+  await DB.execute(sql, [titulo, descripcion, categoria, autorId, id]);
+  return selectById(id);
+};
+
+/**
+ * Borra un post.
+ * @param {number} id id del post
+ * @returns {Promise<boolean>} true si se borró la fila
+ */
+export const remove = async (id) => {
+  const sql = 'DELETE FROM posts WHERE id = ?';
+  const [result] = await DB.execute(sql, [id]);
+  return result.affectedRows > 0;
+};

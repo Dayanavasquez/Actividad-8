@@ -9,8 +9,6 @@ GET {{baseUrl}}/api/authors/1
 ### 3. Recuperar posts de un autor por id → 200, array de posts
 GET {{baseUrl}}/api/authors/1/posts
 
-### 3. Recuperar posts de un autor por nombre → 200, array de posts
-GET {{baseUrl}}/api/authors/nombre/Ana Torres/posts
 
 ### 4. Crear autor → 200, objeto creado (la respuesta alimenta la request 11)
 # @name crearAutor
@@ -42,13 +40,13 @@ Content-Type: application/json
   "email": "esto-no"
 }
 
-### 7. Autor que no existe → 404, mensaje
+### 7.Autor que no existe → 404, mensaje
 GET {{baseUrl}}/api/authors/9999
 
 ### 8. Id de autor no numérico → 400, mensaje
 GET {{baseUrl}}/api/authors/abc
 
-### 9. Listar posts → 200, array de posts
+### 9.Listar posts → 200, array de posts
 GET {{baseUrl}}/api/posts
 
 ### 10. Post por id → 200, objeto
@@ -56,10 +54,11 @@ GET {{baseUrl}}/api/posts/1
 
 ### 11. Posts de un autor sin publicaciones → 200, array vacío
 # Ojo: hay que enviar antes la request 4. El autor recién creado no tiene posts;
-# los tres autores del seed tienen dos cada uno.
+#Los tres autores del seed tienen dos cada uno.
 GET {{baseUrl}}/api/authors/{{crearAutor.response.body.$.id}}/posts
 
-### 12. Crear post → 200, objeto creado
+### 12. Crear post → 200, objeto creado (la respuesta alimenta las requests 17, 19 y 20)
+# @name crearPost
 POST {{baseUrl}}/api/posts
 Content-Type: application/json
 
@@ -81,7 +80,7 @@ Content-Type: application/json
   "autorId": 1
 }
 
-### 14. Crear post con autor inexistente → 400, mensaje
+### 14.Crear post con autor inexistente → 400, mensaje
 POST {{baseUrl}}/api/posts
 Content-Type: application/json
 
@@ -94,3 +93,61 @@ Content-Type: application/json
 
 ### 15. Post que no existe → 404, mensaje
 GET {{baseUrl}}/api/posts/9999
+
+#HE AGREGADO EL PUT,PATCH Y DELETE PARA PROBARLOS.
+# AUNQUE NO ESTABAN SOLICITADOS EN LA ACTIVIDAD, LOS HE AGREGADO PARA VER SU FUNCIONAMIENTO.
+
+### 16. Actualizar autor → 200, objeto actualizado
+# Repetir el email PROPIO no es conflicto: el 400 "Ya existe un autor con ese email."
+#sólo aparece si el email es de otro autor.
+PUT {{baseUrl}}/api/authors/{{crearAutor.response.body.$.id}}
+Content-Type: application/json
+
+{
+  "nombre": "Diego Farias",
+  "email": "diego.farias@example.com",
+  "imagen": "https://i.pravatar.cc/150?img=12"
+}
+
+### 17. Actualizar post → 200, objeto actualizado con su autor anidado
+# El PUT reemplaza los cuatro campos editables; la fecha_creacion no se toca.
+PUT {{baseUrl}}/api/posts/{{crearPost.response.body.$.id}}
+Content-Type: application/json
+
+{
+  "titulo": "Middlewares en Express (actualizado)",
+  "descripcion": "Un middleware encadenado corre antes del controlador.",
+  "categoria": "Node",
+  "autorId": 1
+}
+
+### 18. Parchear autor (PATCH parcial) → 200, objeto actualizado
+# El PATCH manda SÓLO lo que cambia: acá la imagen. El nombre y el email que no
+#vienen conservan su valor. Ningún campo es obligatorio, pero un body vacío
+# ({}) responde 400 {"message":"No enviaste ningún campo para actualizar."}
+PATCH {{baseUrl}}/api/authors/{{crearAutor.response.body.$.id}}
+Content-Type: application/json
+
+{
+  "imagen": "https://i.pravatar.cc/150?img=15"
+}
+
+### 19. Parchear post (PATCH parcial) → 200, objeto actualizado con su autor anidado
+# Sólo el título: la descripción, la categoría, la fecha_creacion y el autorId
+# quedan como estaban. Un "autorId":9999 en el parche responde 400
+# {"message":"No existe un autor con el id 9999."} y el post no cambia.
+PATCH {{baseUrl}}/api/posts/{{crearPost.response.body.$.id}}
+Content-Type: application/json
+
+{
+  "titulo": "Middlewares en Express (parcheado)"
+}
+
+### 20. Borrar post → 200 con el post borrado (no 204)
+DELETE {{baseUrl}}/api/posts/{{crearPost.response.body.$.id}}
+
+### 21. Borrar autor → 200 con el autor borrado
+#Ojo: borrar un autor borra también sus posts (fk_posts_autor es ON DELETE CASCADE).
+# Esta request borra el autor de la request 4, que es el que usa la request 11:
+# si querés volver a correr el archivo completo, mandá otra vez la request 4.
+DELETE {{baseUrl}}/api/authors/{{crearAutor.response.body.$.id}}

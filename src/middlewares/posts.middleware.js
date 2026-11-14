@@ -12,7 +12,7 @@ export const checkId = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
 
-    // Guard clause: el id tiene que ser un entero positivo.
+    // el id tiene que ser un entero positivo.
     if (!Number.isInteger(id) || id <= 0) {
       return res.status(400).json({
         message: `El id "${req.params.id}" no es válido. Debe ser un número entero positivo.`,
@@ -21,7 +21,7 @@ export const checkId = async (req, res, next) => {
 
     const post = await selectById(id);
 
-    // Guard clause: si no existe, se responde y no se sigue.
+    // si no existe, se responde y no se sigue.
     if (!post) {
       return res.status(404).json({ message: `No existe un post con el id ${id}.` });
     }

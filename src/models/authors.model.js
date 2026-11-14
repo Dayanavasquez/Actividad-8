@@ -67,3 +67,27 @@ export const insert = async ({ nombre, email, imagen }) => {
   const [result] = await DB.execute(sql, [nombre, email, imagen]);
   return selectById(result.insertId);
 };
+
+/**
+ * Reemplaza los datos de un autor y devuelve la fila actualizada.
+ * @param {number} id id del autor
+ * @param {{nombre: string, email: string, imagen: string|null}} autor datos del autor
+ * @returns {Promise<Object|null>} el autor actualizado o null si no existe
+ */
+export const update = async (id, { nombre, email, imagen }) => {
+  const sql = 'UPDATE autores SET nombre = ?, email = ?, imagen = ? WHERE id = ?';
+  await DB.execute(sql, [nombre, email, imagen, id]);
+  return selectById(id);
+};
+
+/**
+ * Borra un autor. Si tenía posts, la clave externa `fk_posts_autor` los borra en
+ * cascada, así que esta llamada también se lleva sus publicaciones.
+ * @param {number} id id del autor
+ * @returns {Promise<boolean>} true si se borró la fila
+ */
+export const remove = async (id) => {
+  const sql = 'DELETE FROM autores WHERE id = ?';
+  const [result] = await DB.execute(sql, [id]);
+  return result.affectedRows > 0;
+};

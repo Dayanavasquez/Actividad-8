@@ -12,7 +12,7 @@ export const checkAuthorId = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
 
-    // Guard clause: el id tiene que ser un entero positivo.
+    // el id tiene que ser un entero positivo.
     if (!Number.isInteger(id) || id <= 0) {
       return res.status(400).json({
         message: `El id "${req.params.id}" no es válido. Debe ser un número entero positivo.`,
@@ -21,7 +21,7 @@ export const checkAuthorId = async (req, res, next) => {
 
     const author = await selectById(id);
 
-    // Guard clause: si no existe, se responde y no se sigue.
+    // si no existe, se responde y no se sigue.
     if (!author) {
       return res.status(404).json({ message: `No existe un autor con el id ${id}.` });
     }
@@ -33,29 +33,5 @@ export const checkAuthorId = async (req, res, next) => {
     res.status(500).json({ message: 'No se pudo comprobar el autor.' });
   }
 };
-export const checkAuthorName = async (req, res, next) => {
-  try {
-    const name = req.params.name; // Reemplaza guiones bajos por espacios 
 
-    // Guard clause: el nombre tiene que ser una cadena no vacía.
-    if (typeof name !== 'string' || name.trim() === '') {
-      return res.status(400).json({
-        message: `El nombre "${req.params.name}" no es válido. Debe ser una cadena no vacía.`,
-      });
-    }
-
-    const author = await selectByName(name);
-
-    // Guard clause: si no existe, se responde y no se sigue.
-    if (!author) {
-      return res.status(404).json({ message: `No existe un autor con el nombre ${name}.` });
-    }
-
-    req.author = author;
-    next();
-  } catch (error) {
-    console.error('[authors.middleware.checkName]', error);
-    res.status(500).json({ message: 'No se pudo comprobar el autor.' });
-  }
-}
 

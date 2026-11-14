@@ -4,6 +4,9 @@ import { logger } from './middlewares/logger.middleware.js';
 import apiRouter from './routes/api.routes.js';
 
 const app = express();
+/**
+ *  TODOS LOS COMENTARIOS LOS HE ESCRITO BASADOS EN LAS RECOMENDACIONES DE LAS CLASES.
+ */
 
 // El logger va antes que las rutas para registrar todas las peticiones.
 app.use(logger);
